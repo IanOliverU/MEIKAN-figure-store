@@ -1,4 +1,5 @@
 import { ScrollView, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CategoryFilter } from '../../components/CategoryFilter';
@@ -64,6 +65,12 @@ const newArrivals = products.filter((product) => product.status === 'PREORDER');
 const inStock = products.filter((product) => product.status === 'INSTOCK');
 
 export default function HomeScreen() {
+  const router = useRouter();
+
+  const openProduct = (id: string) => {
+    router.push(`./product/${id}` as `./${string}`);
+  };
+
   return (
     <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
       <ScrollView
@@ -87,7 +94,7 @@ export default function HomeScreen() {
             contentContainerClassName="gap-3 pr-5"
           >
             {newArrivals.map((product) => (
-              <ProductCard key={product.id} product={product} className="w-40" />
+              <ProductCard key={product.id} product={product} className="w-40" onPress={() => openProduct(product.id)} />
             ))}
           </ScrollView>
         </View>
@@ -96,7 +103,7 @@ export default function HomeScreen() {
           <SectionHeader title="In Stock" />
           <View className="flex-row flex-wrap justify-between gap-y-3">
             {inStock.map((product) => (
-              <ProductCard key={product.id} product={product} className="w-[48%]" />
+              <ProductCard key={product.id} product={product} className="w-[48%]" onPress={() => openProduct(product.id)} />
             ))}
           </View>
         </View>

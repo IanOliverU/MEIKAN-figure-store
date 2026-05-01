@@ -14,6 +14,7 @@ export type Product = {
 type ProductCardProps = {
   product: Product;
   className?: string;
+  onPress?: () => void;
 };
 
 const statusLabel = {
@@ -21,11 +22,14 @@ const statusLabel = {
   INSTOCK: 'IN STOCK',
 };
 
-export function ProductCard({ product, className = '' }: ProductCardProps) {
+export function ProductCard({ product, className = '', onPress }: ProductCardProps) {
   const isPreorder = product.status === 'PREORDER';
 
   return (
-    <Pressable className={`overflow-hidden rounded-2xl border border-[#222222] bg-[#121212] ${className}`}>
+    <Pressable
+      className={`overflow-hidden rounded-2xl border border-[#222222] bg-[#121212] ${className}`}
+      onPress={onPress}
+    >
       <View className="relative h-44 items-center justify-center bg-[#1F1F1F]">
         <View className="absolute left-3 top-3 rounded-md border border-[#C6A96B] px-2 py-1">
           <Text className="text-[10px] font-semibold text-[#C6A96B]">{statusLabel[product.status]}</Text>
