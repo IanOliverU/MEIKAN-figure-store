@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
@@ -57,7 +57,7 @@ export default function CartScreen() {
   };
 
   const handleCheckout = () => {
-    console.log('Checkout');
+    router.push('./checkout' as `./${string}`);
   };
 
   const handleBrowse = () => {

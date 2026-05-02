@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons';
+﻿import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
 const ACCENT = '#C6A96B';
@@ -65,6 +65,12 @@ export default function TabsLayout() {
       />
       <Tabs.Screen
         name="product/[id]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="checkout"
         options={{
           href: null,
         }}
