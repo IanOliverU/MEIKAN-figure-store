@@ -75,6 +75,12 @@ export default function TabsLayout() {
           href: null,
         }}
       />
+      <Tabs.Screen
+        name="order-tracking"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }
