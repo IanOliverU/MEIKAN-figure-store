@@ -16,7 +16,7 @@ export function Header() {
       <View>
         <View className="flex-row items-baseline">
           <Text className="text-2xl font-semibold tracking-wide text-white">MEIK</Text>
-          <Text className="text-2xl font-semibold tracking-wide text-[#C6A96B]">Λ</Text>
+          <Text className="text-2xl font-semibold tracking-wide text-[#C6A96B]">A</Text>
           <Text className="text-2xl font-semibold tracking-wide text-white">N</Text>
         </View>
         <Text className="mt-0.5 text-xs tracking-wide text-[#A1A1A1]">Premium Figures</Text>
