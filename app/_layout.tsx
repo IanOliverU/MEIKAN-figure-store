@@ -18,7 +18,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView className="flex-1 bg-[#0A0A0A]">
       <SafeAreaProvider>
-        <StatusBar barStyle="light-content" />
+        <StatusBar barStyle="light-content" hidden />
         {showSplash ? (
           <SplashScreen onFinish={handleSplashFinish} />
         ) : (
