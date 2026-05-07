@@ -19,7 +19,11 @@ export function SectionHeader({ title, badge, showSeeAll = true, onSeeAll }: Sec
         ) : null}
       </View>
       {showSeeAll ? (
-        <Pressable onPress={onSeeAll} hitSlop={8}>
+        <Pressable
+          onPress={onSeeAll}
+          hitSlop={8}
+          style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}
+        >
           <Text className="text-xs font-semibold text-[#C6A96B]">{'See all ->'}</Text>
         </Pressable>
       ) : null}

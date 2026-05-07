@@ -44,7 +44,16 @@ export function HeroCarousel({ slides, onShopNow }: HeroCarouselProps) {
         onMomentumScrollEnd={handleScrollEnd}
       >
         {slides.map((slide) => (
-          <View key={slide.id} style={{ width: cardWidth }} className="min-h-[274px] px-7 pb-7 pt-8">
+          <Pressable
+            key={slide.id}
+            style={({ pressed }) => ({
+              width: cardWidth,
+              opacity: pressed ? 0.92 : 1,
+              transform: [{ scale: pressed ? 0.992 : 1 }],
+            })}
+            className="min-h-[274px] px-7 pb-7 pt-8"
+            onPress={() => onShopNow(slide.productId)}
+          >
             <View className="flex-1 flex-row items-center justify-between gap-5">
               <View className="max-w-[58%] flex-1">
                 <Text className="text-xs font-semibold uppercase tracking-[2px] text-[#C6A96B]">{slide.label}</Text>
@@ -69,7 +78,7 @@ export function HeroCarousel({ slides, onShopNow }: HeroCarouselProps) {
                 </View>
               </View>
             </View>
-          </View>
+          </Pressable>
         ))}
       </ScrollView>
 

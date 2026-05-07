@@ -121,8 +121,17 @@ export default function HomeScreen() {
     router.push(`./product/${id}` as `./${string}`);
   };
 
-  const logBrandFilter = (brand: Brand) => {
-    console.log('Browse brand filter', brand.id);
+  const openBrowse = (params?: Record<string, string>) => {
+    if (params) {
+      router.push({ pathname: './browse', params });
+      return;
+    }
+
+    router.push('./browse');
+  };
+
+  const openBrandFilter = (brand: Brand) => {
+    openBrowse({ brand: brand.name });
   };
 
   return (
@@ -132,7 +141,12 @@ export default function HomeScreen() {
         contentContainerClassName="px-5 pb-28 pt-6"
         showsVerticalScrollIndicator={false}
       >
-        <Header />
+        <Header
+          hasUnreadNotifications
+          hasCartItems
+          onNotificationsPress={() => router.push('./notifications' as `./${string}`)}
+          onCartPress={() => router.push('./cart')}
+        />
 
         <View className="mt-7">
           <HeroCarousel slides={heroSlides} onShopNow={openProduct} />
@@ -142,19 +156,19 @@ export default function HomeScreen() {
           <FlashSaleBanner
             title="Flash Sale — Up to 30% off"
             countdown="Ends in 05:42:18"
-            onPress={() => console.log('View flash sale')}
+            onPress={() => openBrowse({ filter: 'sale' })}
           />
         </View>
 
         <View className="mt-7">
-          <BrandScroller brands={brands} onBrandPress={logBrandFilter} />
+          <BrandScroller brands={brands} onBrandPress={openBrandFilter} />
         </View>
 
         <View className="mt-8">
           <SectionHeader
             title="On Sale"
             badge={`${saleProducts.length} deals`}
-            onSeeAll={() => console.log('See all sale products')}
+            onSeeAll={() => openBrowse({ filter: 'sale' })}
           />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-4 pr-5">
             {saleProducts.map((product) => (
@@ -173,12 +187,12 @@ export default function HomeScreen() {
           <PromoBanner
             title="GSC Summer 2025 Pre-order Lineup"
             subtitle="Closes Jun 30 · 8 figures"
-            onPress={() => console.log('Open preorder lineup')}
+            onPress={() => openBrowse({ filter: 'preorder' })}
           />
         </View>
 
         <View className="mt-8">
-          <SectionHeader title="New Arrivals" onSeeAll={() => console.log('See all new arrivals')} />
+          <SectionHeader title="New Arrivals" onSeeAll={() => openBrowse({ filter: 'all' })} />
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerClassName="gap-4 pr-5">
             {newArrivals.map((product) => (
               <ProductCard

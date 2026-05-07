@@ -13,6 +13,7 @@ export function PromoBanner({ label = 'PRE-ORDER OPEN', title, subtitle, onPress
     <Pressable
       className="min-h-[132px] flex-row items-center rounded-[24px] border border-[#1D4F85] bg-[#0C2138] px-6 py-5"
       onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.86 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}
     >
       <View className="flex-1 pr-4">
         <Text className="text-xs font-semibold uppercase tracking-[2px] text-[#5FB2F0]">{label}</Text>

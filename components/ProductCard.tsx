@@ -33,6 +33,7 @@ export function ProductCard({ product, className = '', onPress, showFavorite = t
     <Pressable
       className={`overflow-hidden rounded-2xl border border-[#222222] bg-[#121212] ${className}`}
       onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.88 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}
     >
       <View className="relative h-44 items-center justify-center bg-[#1F1F1F]">
         <View

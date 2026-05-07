@@ -15,6 +15,7 @@ export function FilterPill({ label, active = false, compact = false, removable =
         active ? 'border-[#C6A96B] bg-[#C6A96B]' : 'border-[#222222] bg-[#121212]'
       }`}
       onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}
     >
       <Text className={`${compact ? 'text-[11px]' : 'text-xs'} font-semibold ${active ? 'text-[#0A0A0A]' : 'text-[#A1A1A1]'}`}>
         {label}

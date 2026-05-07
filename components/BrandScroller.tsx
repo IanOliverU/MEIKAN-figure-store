@@ -28,6 +28,7 @@ export function BrandScroller({ brands, onBrandPress }: BrandScrollerProps) {
                 active ? 'border-[#5F5132] bg-[#1B1914]' : 'border-[#292929] bg-[#151515]'
               }`}
               onPress={() => onBrandPress(brand)}
+              style={({ pressed }) => ({ opacity: pressed ? 0.82 : 1, transform: [{ scale: pressed ? 0.97 : 1 }] })}
             >
               <View
                 className={`h-11 w-11 items-center justify-center rounded-full border ${

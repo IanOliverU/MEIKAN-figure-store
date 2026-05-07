@@ -1,6 +1,6 @@
-﻿import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useMemo, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -10,7 +10,7 @@ import { SearchBar } from '../../components/SearchBar';
 import { SortDropdown, SortOption } from '../../components/SortDropdown';
 
 const categories = ['All', '1/7 Scale', '1/8 Scale', 'Nendoroid', 'Figma'];
-const brands = ['GSC', 'Alter', 'Max Factory', 'Myethos'];
+const brands = ['GSC', 'Alter', 'Max Factory', 'Myethos', 'Apex'];
 
 type AvailabilityFilter = 'INSTOCK' | 'PREORDER' | null;
 
@@ -30,8 +30,10 @@ const products: CatalogProduct[] = [
     id: '2',
     name: 'Asuna - ALO Ver.',
     brand: 'Alter',
-    price: '₱12,500',
-    priceValue: 12500,
+    price: '₱10,000',
+    originalPrice: '₱12,500',
+    discount: '-20%',
+    priceValue: 10000,
     status: 'PREORDER',
     scale: '1/8 Scale',
     category: '1/8 Scale',
@@ -41,8 +43,10 @@ const products: CatalogProduct[] = [
     id: '3',
     name: 'Mikasa Ackerman',
     brand: 'Max Factory',
-    price: '₱9,800',
-    priceValue: 9800,
+    price: '₱8,330',
+    originalPrice: '₱9,800',
+    discount: '-15%',
+    priceValue: 8330,
     status: 'INSTOCK',
     scale: '1/7 Scale',
     category: 'Figma',
@@ -84,9 +88,11 @@ const products: CatalogProduct[] = [
   {
     id: '7',
     name: 'Fischl - Prinzessin',
-    brand: 'Myethos',
-    price: '₱14,500',
-    priceValue: 14500,
+    brand: 'Apex',
+    price: '₱10,150',
+    originalPrice: '₱14,500',
+    discount: '-30%',
+    priceValue: 10150,
     status: 'INSTOCK',
     scale: '1/7 Scale',
     category: '1/7 Scale',
@@ -112,11 +118,41 @@ const availabilityLabels: Record<Exclude<AvailabilityFilter, null>, string> = {
 
 export default function BrowseScreen() {
   const router = useRouter();
+  const params = useLocalSearchParams<{ brand?: string; filter?: string }>();
   const [query, setQuery] = useState('');
   const [activeCategory, setActiveCategory] = useState('All');
   const [activeBrand, setActiveBrand] = useState<string | null>(null);
   const [availability, setAvailability] = useState<AvailabilityFilter>(null);
+  const [activeSale, setActiveSale] = useState(false);
   const [sort, setSort] = useState<SortOption>('featured');
+
+  useEffect(() => {
+    if (typeof params.brand === 'string' && brands.includes(params.brand)) {
+      setActiveBrand(params.brand);
+      setActiveSale(false);
+      setAvailability(null);
+    }
+
+    if (params.filter === 'sale') {
+      setActiveSale(true);
+      setAvailability(null);
+      setActiveBrand(null);
+    }
+
+    if (params.filter === 'preorder') {
+      setActiveSale(false);
+      setAvailability('PREORDER');
+      setActiveBrand(null);
+    }
+
+    if (params.filter === 'all') {
+      setActiveBrand(null);
+      setAvailability(null);
+      setActiveSale(false);
+      setActiveCategory('All');
+      setQuery('');
+    }
+  }, [params.brand, params.filter]);
 
   const filteredProducts = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -130,8 +166,9 @@ export default function BrowseScreen() {
       const matchesCategory = activeCategory === 'All' || product.category === activeCategory;
       const matchesBrand = activeBrand === null || product.brand === activeBrand;
       const matchesAvailability = availability === null || product.status === availability;
+      const matchesSale = !activeSale || Boolean(product.discount);
 
-      return matchesQuery && matchesCategory && matchesBrand && matchesAvailability;
+      return matchesQuery && matchesCategory && matchesBrand && matchesAvailability && matchesSale;
     });
 
     if (sort === 'priceAsc') {
@@ -143,7 +180,7 @@ export default function BrowseScreen() {
     }
 
     return nextProducts;
-  }, [activeBrand, activeCategory, availability, query, sort]);
+  }, [activeBrand, activeCategory, activeSale, availability, query, sort]);
 
   const openProduct = (id: string) => {
     router.push(`./product/${id}` as `./${string}`);
@@ -159,10 +196,16 @@ export default function BrowseScreen() {
         <View className="flex-row items-center justify-between">
           <Text className="text-3xl font-semibold text-white">Browse</Text>
           <View className="flex-row items-center gap-3">
-            <Pressable className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]">
+            <Pressable
+              className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]"
+              style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}
+            >
               <Ionicons name="filter-outline" size={18} color="#A1A1A1" />
             </Pressable>
-            <Pressable className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]">
+            <Pressable
+              className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]"
+              style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}
+            >
               <Ionicons name="grid-outline" size={18} color="#A1A1A1" />
             </Pressable>
           </View>
@@ -205,6 +248,7 @@ export default function BrowseScreen() {
             compact
             onPress={() => setAvailability(availability === 'PREORDER' ? null : 'PREORDER')}
           />
+          <FilterPill label="On Sale" active={activeSale} compact onPress={() => setActiveSale((current) => !current)} />
           <SortDropdown value={sort} onChange={setSort} />
         </ScrollView>
 
@@ -222,7 +266,10 @@ export default function BrowseScreen() {
               onPress={() => setAvailability(null)}
             />
           ) : null}
-          {activeBrand === null && availability === null ? <Text className="text-xs text-[#777777]">None</Text> : null}
+          {activeSale ? <FilterPill label="On Sale" active compact removable onPress={() => setActiveSale(false)} /> : null}
+          {activeBrand === null && availability === null && !activeSale ? (
+            <Text className="text-xs text-[#777777]">None</Text>
+          ) : null}
         </View>
 
         <View className="mt-5 flex-row items-center justify-between">

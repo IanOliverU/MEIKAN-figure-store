@@ -12,6 +12,7 @@ export function FlashSaleBanner({ title, countdown, onPress }: FlashSaleBannerPr
     <Pressable
       className="min-h-[92px] flex-row items-center rounded-[24px] border border-[#963318] bg-[#240F0A] px-5"
       onPress={onPress}
+      style={({ pressed }) => ({ opacity: pressed ? 0.86 : 1, transform: [{ scale: pressed ? 0.985 : 1 }] })}
     >
       <View className="h-12 w-12 items-center justify-center rounded-xl border border-[#963318] bg-[#2A120D]">
         <Ionicons name="flash-outline" size={24} color="#F06B3B" />
