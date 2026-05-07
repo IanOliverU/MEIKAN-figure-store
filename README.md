@@ -1,23 +1,62 @@
 # MEIKAN
 
-Phase 1 foundation for the MEIKAN Expo app.
+MEIKAN is a dark-mode luxury shopping prototype built with Expo, React Native, Expo Router, and NativeWind.
 
-## Run
+The app currently covers the core storefront flow: home discovery, browsing, product detail, wishlist, cart, checkout, order tracking, and profile screens.
+
+## Getting Started
+
+Install dependencies:
 
 ```bash
 npm install
+```
+
+Start the Expo development server:
+
+```bash
 npm start
 ```
 
-## Structure
+Run directly on a platform:
 
-- `app/` contains Expo Router routes.
-- `src/components/` is reserved for shared UI components.
-- `src/utils/` is reserved for shared utilities.
+```bash
+npm run android
+npm run ios
+```
 
-## Included
+## App Routes
 
-- Expo with TypeScript
-- Expo Router
-- NativeWind with Tailwind config
-- React Native Safe Area Context, Screens, Gesture Handler, and Reanimated
+- `app/(tabs)/index.tsx` - Home storefront
+- `app/(tabs)/browse.tsx` - Product browsing
+- `app/(tabs)/wishlist.tsx` - Saved items
+- `app/(tabs)/cart.tsx` - Shopping cart
+- `app/(tabs)/profile.tsx` - Customer profile
+- `app/(tabs)/product/[id].tsx` - Product detail
+- `app/(tabs)/checkout.tsx` - Checkout flow
+- `app/(tabs)/order-tracking.tsx` - Order status and timeline
+
+## Project Structure
+
+- `app/` - Expo Router layouts and routes
+- `components/` - Shared app UI components
+- `screens/` - Screen-level components used outside the tab routes
+- `assets/` - App icons, splash assets, logos, and image resources
+- `global.css` - NativeWind global stylesheet
+- `tailwind.config.js` - Tailwind and NativeWind configuration
+
+## Tech Stack
+
+- Expo 55
+- React 19
+- React Native 0.83
+- Expo Router with typed routes
+- NativeWind and Tailwind CSS
+- React Native Gesture Handler, Reanimated, Safe Area Context, and Screens
+- Supabase client dependency for backend integration
+
+## Notes
+
+- The app is configured for portrait orientation and dark UI in `app.json`.
+- Tab navigation is defined in `app/(tabs)/_layout.tsx`.
+- There is no automated test script configured yet.
