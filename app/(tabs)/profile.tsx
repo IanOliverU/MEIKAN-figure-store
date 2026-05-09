@@ -1,4 +1,5 @@
-﻿import { Ionicons } from '@expo/vector-icons';
+import { Ionicons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -50,7 +51,7 @@ export default function ProfileScreen() {
 
         <View className="mt-7">
           <MenuSection title="Account">
-            <MenuItem icon="receipt-outline" label="My Orders" showDivider onPress={() => logMenuPress('My Orders')} />
+            <MenuItem icon="receipt-outline" label="My Orders" showDivider onPress={() => router.push('/orders')} />
             <MenuItem
               icon="heart-outline"
               label="Wishlist"
