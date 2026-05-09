@@ -1,60 +1,26 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { PaymentCard, SavedPaymentCard } from '../../components/payment/PaymentCard';
-import { PaymentSection } from '../../components/payment/PaymentSection';
-import { SecurityNotice } from '../../components/payment/SecurityNotice';
-import { SavedWallet, WalletCard } from '../../components/payment/WalletCard';
+import { PaymentCard } from '../../../components/payment/PaymentCard';
+import { usePaymentMethods } from '../../../components/payment/PaymentMethodsContext';
+import { PaymentSection } from '../../../components/payment/PaymentSection';
+import { SecurityNotice } from '../../../components/payment/SecurityNotice';
+import { WalletCard, WalletProvider } from '../../../components/payment/WalletCard';
 
-const savedCards: SavedPaymentCard[] = [
-  {
-    id: 'visa-4291',
-    type: 'Visa',
-    last4: '4291',
-    expiry: '09/27',
-    isDefault: true,
-  },
-  {
-    id: 'mastercard-8414',
-    type: 'Mastercard',
-    last4: '8414',
-    expiry: '03/26',
-    isDefault: false,
-  },
-];
+const ADD_CARD_ROUTE = '/payment-methods/add' as Href;
 
-const wallets: SavedWallet[] = [
-  {
-    id: 'gcash',
-    provider: 'GCash',
-    linked: true,
-    number: '+63 917 ••• 3427',
-  },
-  {
-    id: 'maya',
-    provider: 'Maya',
-    linked: false,
-  },
-];
+function cardDetailRoute(cardId: string) {
+  return `/payment-methods/${cardId}` as Href;
+}
+
+function walletRoute(provider: WalletProvider) {
+  return `/payment-methods/wallet/${provider.toLowerCase()}` as Href;
+}
 
 export default function PaymentMethodsScreen() {
-  const handleCardPress = (cardId: string) => {
-    console.log(`Open payment detail placeholder: ${cardId}`);
-  };
-
-  const handleWalletPress = (walletId: string) => {
-    console.log(`Open wallet placeholder: ${walletId}`);
-  };
-
-  const handleLinkWallet = (walletId: string) => {
-    console.log(`Link wallet: ${walletId}`);
-  };
-
-  const handleAddCard = () => {
-    console.log('Navigate to add card placeholder');
-  };
+  const { cards, wallets } = usePaymentMethods();
 
   return (
     <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
@@ -76,8 +42,8 @@ export default function PaymentMethodsScreen() {
 
         <View className="mt-8">
           <PaymentSection title="Saved Cards">
-            {savedCards.map((card) => (
-              <PaymentCard key={card.id} card={card} onPress={() => handleCardPress(card.id)} />
+            {cards.map((card) => (
+              <PaymentCard key={card.id} card={card} onPress={() => router.push(cardDetailRoute(card.id))} />
             ))}
           </PaymentSection>
         </View>
@@ -88,8 +54,8 @@ export default function PaymentMethodsScreen() {
               <WalletCard
                 key={wallet.id}
                 wallet={wallet}
-                onPress={() => handleWalletPress(wallet.id)}
-                onLink={() => handleLinkWallet(wallet.id)}
+                onPress={() => router.push(walletRoute(wallet.provider))}
+                onLink={() => router.push(walletRoute(wallet.provider))}
               />
             ))}
           </PaymentSection>
@@ -97,7 +63,7 @@ export default function PaymentMethodsScreen() {
 
         <Pressable
           className="mt-8 h-12 flex-row items-center justify-center rounded-xl bg-[#C6A96B] px-5"
-          onPress={handleAddCard}
+          onPress={() => router.push(ADD_CARD_ROUTE)}
           style={({ pressed }) => ({ opacity: pressed ? 0.82 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] })}
         >
           <Ionicons name="add" size={18} color="#0A0A0A" />

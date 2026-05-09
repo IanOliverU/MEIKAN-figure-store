@@ -9,6 +9,9 @@ export type SavedPaymentCard = {
   last4: string;
   expiry: string;
   isDefault: boolean;
+  cardholderName: string;
+  billingAddress: string;
+  country: string;
   expired?: boolean;
 };
 
@@ -17,7 +20,7 @@ type PaymentCardProps = {
   onPress?: () => void;
 };
 
-const brandStyles = {
+export const paymentBrandStyles = {
   Visa: {
     label: 'VISA',
     className: 'bg-blue-500/20 border-blue-400/30',
@@ -31,7 +34,7 @@ const brandStyles = {
 };
 
 export function PaymentCard({ card, onPress }: PaymentCardProps) {
-  const brand = brandStyles[card.type];
+  const brand = paymentBrandStyles[card.type];
 
   return (
     <Pressable

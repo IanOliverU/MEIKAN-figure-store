@@ -56,7 +56,7 @@ export function WalletCard({ wallet, onPress, onLink }: WalletCardProps) {
         ) : (
           <Pressable
             className="h-9 justify-center rounded-xl px-3"
-            onPress={onLink}
+            onPress={onLink ?? onPress}
             style={({ pressed }) => ({ opacity: pressed ? 0.72 : 1 })}
           >
             <Text className="text-sm font-semibold text-[#C6A96B]">Link</Text>
