@@ -58,20 +58,20 @@ export default function LoginScreen() {
       <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ScrollView
           className="flex-1"
-          contentContainerClassName="flex-grow justify-center px-5 py-8"
+          contentContainerClassName="flex-grow justify-center px-5 py-10"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="mx-auto w-full" style={{ maxWidth: 380 }}>
-            <View className="rounded-[32px] border border-[#222222] bg-[#121212] px-6 py-9">
+          <View className="mx-auto w-full" style={{ maxWidth: 390 }}>
+            <View className="rounded-[32px] border border-[#222222] bg-[#121212] px-7 py-10">
               <BrandMark />
 
-              <View className="mt-10">
-                <Text className="text-2xl font-semibold text-white">Welcome back</Text>
-                <Text className="mt-1 text-sm text-[#A1A1A1]">Sign in to your collector account</Text>
+              <View className="mt-12">
+                <Text className="text-[26px] font-semibold text-white">Welcome back</Text>
+                <Text className="mt-1.5 text-sm text-[#A1A1A1]">Sign in to your collector account</Text>
               </View>
 
-              <View className="mt-6 gap-4">
+              <View className="mt-7 gap-5">
                 {showInvalidError ? <AuthError message="Invalid email or password. Please try again." /> : null}
                 <AuthInput
                   label="Email"
@@ -102,25 +102,25 @@ export default function LoginScreen() {
 
               <Pressable
                 accessibilityRole="button"
-                className="mt-3 self-end py-2"
+                className="mt-4 self-end py-1.5"
                 onPress={() => router.push('/forgot-password' as never)}
                 style={({ pressed }) => ({ opacity: pressed ? 0.62 : 1 })}
               >
-                <Text className="text-sm font-medium text-[#C6A96B]">Forgot password?</Text>
+                <Text className="text-xs font-medium text-[#C6A96B]">Forgot password?</Text>
               </Pressable>
 
-              <View className="mt-3">
+              <View className="mt-5">
                 <AuthButton title="Sign In" iconName="log-in-outline" loading={isSigningIn} onPress={handleSignIn} />
               </View>
 
-              <View className="my-5">
+              <View className="my-6">
                 <AuthDivider />
               </View>
 
               <AuthButton title="Continue with Google" variant="outline" iconName="logo-google" onPress={handleGoogleLogin} />
 
               {showAttemptsError ? (
-                <View className="mt-5">
+                <View className="mt-6">
                   <AuthError
                     tone="warning"
                     message="Too many attempts. Try again in 30s or reset your password."
@@ -128,7 +128,7 @@ export default function LoginScreen() {
                 </View>
               ) : null}
 
-              <View className="mt-7 flex-row flex-wrap items-center justify-center">
+              <View className="mt-8 flex-row flex-wrap items-center justify-center">
                 <Text className="text-sm text-[#666666]">New collector? </Text>
                 <Pressable
                   accessibilityRole="link"

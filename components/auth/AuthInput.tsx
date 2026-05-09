@@ -44,21 +44,21 @@ export function AuthInput({
   const [isFocused, setIsFocused] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const shouldHideText = secureTextEntry && !isPasswordVisible;
-  const borderColor = error ? '#7F2A2A' : isFocused ? '#C6A96B' : '#222222';
+  const borderColor = error ? '#7F2A2A' : isFocused ? '#C6A96B' : '#242424';
   const labelColor = error ? '#D06A63' : isFocused ? '#C6A96B' : '#A1A1A1';
 
   return (
     <View>
-      <Text className="mb-2 text-xs font-medium uppercase text-[#A1A1A1]" style={{ color: labelColor }}>
+      <Text className="mb-2.5 text-[11px] font-medium uppercase tracking-wide" style={{ color: labelColor }}>
         {label}
       </Text>
       <View
-        className="h-14 flex-row items-center rounded-2xl bg-[#1A1A1A] px-4"
-        style={{ borderColor, borderWidth: 1 }}
+        className="flex-row items-center rounded-2xl bg-[#1A1A1A] px-4"
+        style={{ borderColor, borderWidth: 1, height: 58 }}
       >
         {iconName ? <Ionicons name={iconName} size={18} color={error ? '#D06A63' : '#777777'} /> : null}
         <TextInput
-          className="ml-3 min-w-0 flex-1 text-base text-white"
+          className="ml-3 h-full min-w-0 flex-1 py-0 text-base text-white"
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
@@ -79,7 +79,7 @@ export function AuthInput({
           <Pressable
             accessibilityRole="button"
             accessibilityLabel={isPasswordVisible ? 'Hide password' : 'Show password'}
-            className="ml-3 h-9 w-9 items-center justify-center rounded-full"
+            className="ml-3 h-10 w-10 items-center justify-center rounded-full"
             onPress={() => setIsPasswordVisible((current) => !current)}
             style={({ pressed }) => ({ opacity: pressed ? 0.65 : 1 })}
           >
