@@ -1,4 +1,4 @@
-export type AppLanguage = 'en' | 'fil';
+export type AppLanguage = 'en' | 'fil' | 'ja';
 export type AppTheme = 'dark';
 
 export type AppPreferences = {
@@ -20,7 +20,7 @@ let mockAppPreferences: AppPreferences = {
 };
 
 // Future localization integration belongs here alongside an app-wide language provider.
-// Suggested future files: /i18n/en.json and /i18n/fil.json.
+// Suggested future files: /i18n/en.json, /i18n/fil.json, and /i18n/ja.json.
 export async function getAppPreferences() {
   return Promise.resolve({ ...mockAppPreferences });
 }

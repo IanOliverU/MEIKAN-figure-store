@@ -26,6 +26,7 @@ const fallbackPreferences: AppPreferences = {
 const languageOptions: Array<{ value: AppLanguage; label: string; subtitle: string }> = [
   { value: 'en', label: 'English', subtitle: 'Use English labels and app copy later.' },
   { value: 'fil', label: 'Filipino', subtitle: 'Save Filipino as your future language preference.' },
+  { value: 'ja', label: 'Japanese', subtitle: 'Save Japanese as your future language preference.' },
 ];
 
 function Header() {
