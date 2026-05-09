@@ -24,6 +24,7 @@ const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
 const ADDRESSES_ROUTE = '/addresses' as Href;
 const REWARDS_ROUTE = '/rewards' as Href;
 const HELP_ROUTE = '/help' as Href;
+const ABOUT_ROUTE = '/settings/about' as Href;
 const WISHLIST_ROUTE = '/wishlist' as Href;
 const ACCOUNT_SETTINGS_ROUTE = '/settings/account' as Href;
 const EDIT_PROFILE_ROUTE = '/settings/account/edit-profile' as Href;
@@ -145,6 +146,7 @@ export default function ProfileScreen() {
         <View className="mt-6">
           <MenuSection title="Support">
             <MenuItem icon="chatbox-outline" label="Help Center" showDivider onPress={() => router.push(HELP_ROUTE)} />
+            <MenuItem icon="information-circle-outline" label="About MEIKAN" showDivider onPress={() => router.push(ABOUT_ROUTE)} />
             <MenuItem icon="log-out-outline" label="Sign Out" danger onPress={() => logMenuPress('Sign Out')} />
           </MenuSection>
         </View>

@@ -1,0 +1,72 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Href, router, useLocalSearchParams } from 'expo-router';
+import { Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { legalInfo, LegalInfoId } from '../../config/appInfo';
+
+const ABOUT_ROUTE = '/settings/about' as Href;
+
+function isLegalInfoId(id: string | undefined): id is LegalInfoId {
+  return id === 'terms' || id === 'privacy' || id === 'licenses';
+}
+
+export default function AboutLegalDetailScreen() {
+  const { id } = useLocalSearchParams<{ id: string }>();
+  const page = isLegalInfoId(id) ? legalInfo[id] : null;
+
+  if (!page) {
+    return (
+      <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
+        <View className="flex-1 items-center justify-center px-7">
+          <View className="h-20 w-20 items-center justify-center rounded-full border border-[#2A2A2A] bg-[#171717]">
+            <Ionicons name="document-text-outline" size={34} color="#5F5F5F" />
+          </View>
+          <Text className="mt-6 text-xl font-semibold text-white">Page not found</Text>
+          <Text className="mt-3 text-center text-sm leading-5 text-[#777777]">This About page is not available in the local build.</Text>
+          <Pressable
+            className="mt-8 h-12 flex-row items-center justify-center rounded-xl bg-[#C6A96B] px-7"
+            onPress={() => router.replace(ABOUT_ROUTE)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.82 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] })}
+          >
+            <Text className="text-sm font-semibold text-[#0A0A0A]">Back to About</Text>
+          </Pressable>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
+      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-28 pt-5" showsVerticalScrollIndicator={false}>
+        <View className="flex-row items-center">
+          <Pressable
+            className="h-10 w-10 items-center justify-center rounded-xl border border-[#222222] bg-[#121212]"
+            onPress={() => router.back()}
+            style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}
+          >
+            <Ionicons name="chevron-back" size={18} color="#A1A1A1" />
+          </Pressable>
+          <View className="ml-4 min-w-0 flex-1">
+            <Text className="text-xl font-semibold text-white">{page.title}</Text>
+            <Text className="mt-1 text-sm text-[#A1A1A1]">Last updated {page.lastUpdated}</Text>
+          </View>
+        </View>
+
+        <View className="mt-8 rounded-2xl border border-[#222222] bg-[#121212] p-5">
+          <Text className="text-xs font-semibold uppercase tracking-wider text-[#C6A96B]">MEIKAN Info</Text>
+          <Text className="mt-3 text-2xl font-semibold text-white">{page.title}</Text>
+          <Text className="mt-2 text-sm text-[#777777]">Last updated {page.lastUpdated}</Text>
+
+          <View className="mt-6 gap-4">
+            {page.content.map((paragraph) => (
+              <Text key={paragraph} className="text-sm leading-6 text-[#A1A1A1]">
+                {paragraph}
+              </Text>
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </SafeAreaView>
+  );
+}
