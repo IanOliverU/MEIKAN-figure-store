@@ -25,6 +25,7 @@ const logMenuPress = (label: string) => {
 };
 
 const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
+const ADDRESSES_ROUTE = '/addresses' as Href;
 
 export default function ProfileScreen() {
   return (
@@ -67,7 +68,7 @@ export default function ProfileScreen() {
               showDivider
               onPress={() => router.push(PAYMENT_METHODS_ROUTE)}
             />
-            <MenuItem icon="location-outline" label="Addresses" showDivider onPress={() => logMenuPress('Addresses')} />
+            <MenuItem icon="location-outline" label="Addresses" showDivider onPress={() => router.push(ADDRESSES_ROUTE)} />
             <MenuItem
               icon="star-outline"
               label="Rewards & Points"

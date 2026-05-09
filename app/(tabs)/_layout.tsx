@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
+import { AddressProvider } from '../../components/addresses/AddressContext';
 import { PaymentMethodsProvider } from '../../components/payment/PaymentMethodsContext';
 
 const ACCENT = '#C6A96B';
@@ -8,29 +9,30 @@ const MUTED = '#666666';
 
 export default function TabsLayout() {
   return (
-    <PaymentMethodsProvider>
-      <Tabs
-        screenOptions={{
-          headerShown: false,
-          tabBarShowLabel: false,
-          tabBarActiveTintColor: ACCENT,
-          tabBarInactiveTintColor: MUTED,
-          tabBarStyle: {
-            position: 'absolute',
-            height: 72,
-            paddingBottom: 18,
-            paddingTop: 12,
-            backgroundColor: '#0A0A0A',
-            borderTopColor: '#222222',
-            borderTopWidth: 1,
-            elevation: 0,
-            shadowOpacity: 0,
-          },
-          sceneStyle: {
-            backgroundColor: '#0A0A0A',
-          },
-        }}
-      >
+    <AddressProvider>
+      <PaymentMethodsProvider>
+        <Tabs
+          screenOptions={{
+            headerShown: false,
+            tabBarShowLabel: false,
+            tabBarActiveTintColor: ACCENT,
+            tabBarInactiveTintColor: MUTED,
+            tabBarStyle: {
+              position: 'absolute',
+              height: 72,
+              paddingBottom: 18,
+              paddingTop: 12,
+              backgroundColor: '#0A0A0A',
+              borderTopColor: '#222222',
+              borderTopWidth: 1,
+              elevation: 0,
+              shadowOpacity: 0,
+            },
+            sceneStyle: {
+              backgroundColor: '#0A0A0A',
+            },
+          }}
+        >
         <Tabs.Screen
           name="index"
           options={{
@@ -97,12 +99,19 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="addresses"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
           name="notifications"
           options={{
             href: null,
           }}
         />
-      </Tabs>
-    </PaymentMethodsProvider>
+        </Tabs>
+      </PaymentMethodsProvider>
+    </AddressProvider>
   );
 }
