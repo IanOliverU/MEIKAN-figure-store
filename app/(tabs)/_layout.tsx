@@ -88,6 +88,12 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
+        name="payment-methods"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
         name="notifications"
         options={{
           href: null,

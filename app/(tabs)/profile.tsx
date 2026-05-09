@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { router } from 'expo-router';
+import { Href, router } from 'expo-router';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -23,6 +23,8 @@ const stats = {
 const logMenuPress = (label: string) => {
   console.log(label);
 };
+
+const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
 
 export default function ProfileScreen() {
   return (
@@ -63,7 +65,7 @@ export default function ProfileScreen() {
               icon="card-outline"
               label="Payment Methods"
               showDivider
-              onPress={() => logMenuPress('Payment Methods')}
+              onPress={() => router.push(PAYMENT_METHODS_ROUTE)}
             />
             <MenuItem icon="location-outline" label="Addresses" showDivider onPress={() => logMenuPress('Addresses')} />
             <MenuItem
