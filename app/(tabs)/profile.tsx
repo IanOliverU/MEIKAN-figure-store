@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Href, router } from 'expo-router';
+import { Href, router, useFocusEffect } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -7,12 +8,7 @@ import { MenuItem } from '../../components/MenuItem';
 import { MenuSection } from '../../components/MenuSection';
 import { ProfileCard, ProfileUser } from '../../components/ProfileCard';
 import { StatsCard } from '../../components/StatsCard';
-
-const user: ProfileUser = {
-  name: 'Juan dela Cruz',
-  email: 'juan.delacruz@gmail.com',
-  tier: 'Collector Tier',
-};
+import { getProfile } from '../../services/supabase/profileService';
 
 const stats = {
   orders: 12,
@@ -29,8 +25,34 @@ const ADDRESSES_ROUTE = '/addresses' as Href;
 const REWARDS_ROUTE = '/rewards' as Href;
 const HELP_ROUTE = '/help' as Href;
 const WISHLIST_ROUTE = '/wishlist' as Href;
+const ACCOUNT_SETTINGS_ROUTE = '/settings/account' as Href;
+const EDIT_PROFILE_ROUTE = '/settings/account/edit-profile' as Href;
+
+const fallbackUser: ProfileUser = {
+  display_name: 'Juan dela Cruz',
+  username: 'juan_collector',
+  avatar_url: null,
+  email: 'juan@example.com',
+  tier: 'Collector Tier',
+};
 
 export default function ProfileScreen() {
+  const [user, setUser] = useState<ProfileUser>(fallbackUser);
+
+  useFocusEffect(
+    useCallback(() => {
+      getProfile().then((profile) => {
+        setUser({
+          display_name: profile.display_name,
+          username: profile.username,
+          avatar_url: profile.avatar_url,
+          email: profile.email,
+          tier: 'Collector Tier',
+        });
+      });
+    }, []),
+  );
+
   return (
     <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
       <ScrollView
@@ -40,13 +62,18 @@ export default function ProfileScreen() {
       >
         <View className="flex-row items-center justify-between">
           <Text className="text-3xl font-semibold text-white">My Profile</Text>
-          <Pressable className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]">
+          <Pressable
+            className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]"
+            hitSlop={10}
+            onPress={() => router.push(ACCOUNT_SETTINGS_ROUTE)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}
+          >
             <Ionicons name="settings-outline" size={18} color="#A1A1A1" />
           </Pressable>
         </View>
 
         <View className="mt-6">
-          <ProfileCard user={user} />
+          <ProfileCard user={user} onPress={() => router.push(EDIT_PROFILE_ROUTE)} />
         </View>
 
         <View className="mt-5 flex-row gap-3">
@@ -57,6 +84,12 @@ export default function ProfileScreen() {
 
         <View className="mt-7">
           <MenuSection title="Account">
+            <MenuItem
+              icon="person-circle-outline"
+              label="Account & Identity"
+              showDivider
+              onPress={() => router.push(ACCOUNT_SETTINGS_ROUTE)}
+            />
             <MenuItem icon="receipt-outline" label="My Orders" showDivider onPress={() => router.push('/orders')} />
             <MenuItem
               icon="heart-outline"
