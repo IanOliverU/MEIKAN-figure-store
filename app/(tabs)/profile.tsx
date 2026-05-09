@@ -27,6 +27,7 @@ const logMenuPress = (label: string) => {
 const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
 const ADDRESSES_ROUTE = '/addresses' as Href;
 const REWARDS_ROUTE = '/rewards' as Href;
+const HELP_ROUTE = '/help' as Href;
 
 export default function ProfileScreen() {
   return (
@@ -81,7 +82,7 @@ export default function ProfileScreen() {
 
         <View className="mt-6">
           <MenuSection title="Support">
-            <MenuItem icon="chatbox-outline" label="Help Center" showDivider onPress={() => logMenuPress('Help Center')} />
+            <MenuItem icon="chatbox-outline" label="Help Center" showDivider onPress={() => router.push(HELP_ROUTE)} />
             <MenuItem icon="log-out-outline" label="Sign Out" danger onPress={() => logMenuPress('Sign Out')} />
           </MenuSection>
         </View>

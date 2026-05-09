@@ -111,6 +111,12 @@ export default function TabsLayout() {
           }}
         />
         <Tabs.Screen
+          name="help"
+          options={{
+            href: null,
+          }}
+        />
+        <Tabs.Screen
           name="notifications"
           options={{
             href: null,
