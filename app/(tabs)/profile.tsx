@@ -26,6 +26,7 @@ const logMenuPress = (label: string) => {
 
 const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
 const ADDRESSES_ROUTE = '/addresses' as Href;
+const REWARDS_ROUTE = '/rewards' as Href;
 
 export default function ProfileScreen() {
   return (
@@ -73,7 +74,7 @@ export default function ProfileScreen() {
               icon="star-outline"
               label="Rewards & Points"
               badge={`${stats.points.toLocaleString('en-US')} pts`}
-              onPress={() => logMenuPress('Rewards & Points')}
+              onPress={() => router.push(REWARDS_ROUTE)}
             />
           </MenuSection>
         </View>
