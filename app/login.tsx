@@ -1,0 +1,147 @@
+import { Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { useEffect, useRef, useState } from 'react';
+import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { AuthButton, AuthDivider, AuthError, AuthInput } from '../components/auth';
+
+function BrandMark() {
+  return (
+    <View className="items-center">
+      <View className="h-16 w-16 items-center justify-center rounded-2xl border border-[#222222] bg-[#1A1A1A]">
+        <Ionicons name="cube" size={25} color="#C6A96B" />
+      </View>
+      <View className="mt-4 flex-row items-baseline">
+        <Text className="text-2xl font-semibold tracking-[4px] text-white">MEIK</Text>
+        <Text className="text-2xl font-semibold tracking-[4px] text-[#C6A96B]">A</Text>
+        <Text className="text-2xl font-semibold tracking-[4px] text-white">N</Text>
+      </View>
+      <Text className="mt-1 text-sm text-[#666666]">Premium Anime Figures</Text>
+    </View>
+  );
+}
+
+export default function LoginScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams<{ state?: string }>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSigningIn, setIsSigningIn] = useState(false);
+
+  const showInvalidError = params.state === 'error';
+  const showAttemptsError = params.state === 'attempts';
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleSignIn = () => {
+    setIsSigningIn(true);
+    timeoutRef.current = setTimeout(() => {
+      setIsSigningIn(false);
+      router.replace('/(tabs)' as never);
+    }, 650);
+  };
+
+  const handleGoogleLogin = () => {
+    console.log('Google login pressed');
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#0A0A0A]">
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+        <ScrollView
+          className="flex-1"
+          contentContainerClassName="flex-grow justify-center px-5 py-8"
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="mx-auto w-full" style={{ maxWidth: 380 }}>
+            <View className="rounded-[32px] border border-[#222222] bg-[#121212] px-6 py-9">
+              <BrandMark />
+
+              <View className="mt-10">
+                <Text className="text-2xl font-semibold text-white">Welcome back</Text>
+                <Text className="mt-1 text-sm text-[#A1A1A1]">Sign in to your collector account</Text>
+              </View>
+
+              <View className="mt-6 gap-4">
+                {showInvalidError ? <AuthError message="Invalid email or password. Please try again." /> : null}
+                <AuthInput
+                  label="Email"
+                  value={email}
+                  onChangeText={setEmail}
+                  placeholder="juan@gmail.com"
+                  iconName="mail-outline"
+                  keyboardType="email-address"
+                  autoComplete="email"
+                  textContentType="emailAddress"
+                  returnKeyType="next"
+                  error={showInvalidError ? 'Check the email used for this account.' : undefined}
+                />
+                <AuthInput
+                  label="Password"
+                  value={password}
+                  onChangeText={setPassword}
+                  placeholder="Enter password"
+                  iconName="lock-closed-outline"
+                  secureTextEntry
+                  autoComplete="password"
+                  textContentType="password"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSignIn}
+                  error={showInvalidError ? 'Incorrect password.' : undefined}
+                />
+              </View>
+
+              <Pressable
+                accessibilityRole="button"
+                className="mt-3 self-end py-2"
+                onPress={() => router.push('/forgot-password' as never)}
+                style={({ pressed }) => ({ opacity: pressed ? 0.62 : 1 })}
+              >
+                <Text className="text-sm font-medium text-[#C6A96B]">Forgot password?</Text>
+              </Pressable>
+
+              <View className="mt-3">
+                <AuthButton title="Sign In" iconName="log-in-outline" loading={isSigningIn} onPress={handleSignIn} />
+              </View>
+
+              <View className="my-5">
+                <AuthDivider />
+              </View>
+
+              <AuthButton title="Continue with Google" variant="outline" iconName="logo-google" onPress={handleGoogleLogin} />
+
+              {showAttemptsError ? (
+                <View className="mt-5">
+                  <AuthError
+                    tone="warning"
+                    message="Too many attempts. Try again in 30s or reset your password."
+                  />
+                </View>
+              ) : null}
+
+              <View className="mt-7 flex-row flex-wrap items-center justify-center">
+                <Text className="text-sm text-[#666666]">New collector? </Text>
+                <Pressable
+                  accessibilityRole="link"
+                  onPress={() => router.push('/register' as never)}
+                  style={({ pressed }) => ({ opacity: pressed ? 0.62 : 1 })}
+                >
+                  <Text className="text-sm font-semibold text-[#C6A96B]">Create an account</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
+  );
+}
