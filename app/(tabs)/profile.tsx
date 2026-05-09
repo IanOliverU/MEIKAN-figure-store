@@ -27,6 +27,7 @@ const HELP_ROUTE = '/help' as Href;
 const WISHLIST_ROUTE = '/wishlist' as Href;
 const ACCOUNT_SETTINGS_ROUTE = '/settings/account' as Href;
 const EDIT_PROFILE_ROUTE = '/settings/account/edit-profile' as Href;
+const SHOPPING_PREFERENCES_ROUTE = '/settings/preferences' as Href;
 
 const fallbackUser: ProfileUser = {
   display_name: 'Juan dela Cruz',
@@ -89,6 +90,12 @@ export default function ProfileScreen() {
               label="Account & Identity"
               showDivider
               onPress={() => router.push(ACCOUNT_SETTINGS_ROUTE)}
+            />
+            <MenuItem
+              icon="options-outline"
+              label="Shopping Preferences"
+              showDivider
+              onPress={() => router.push(SHOPPING_PREFERENCES_ROUTE)}
             />
             <MenuItem icon="receipt-outline" label="My Orders" showDivider onPress={() => router.push('/orders')} />
             <MenuItem
