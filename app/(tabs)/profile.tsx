@@ -28,6 +28,7 @@ const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
 const ADDRESSES_ROUTE = '/addresses' as Href;
 const REWARDS_ROUTE = '/rewards' as Href;
 const HELP_ROUTE = '/help' as Href;
+const WISHLIST_ROUTE = '/wishlist' as Href;
 
 export default function ProfileScreen() {
   return (
@@ -62,7 +63,7 @@ export default function ProfileScreen() {
               label="Wishlist"
               badge={`${stats.wishlist} items`}
               showDivider
-              onPress={() => logMenuPress('Wishlist')}
+              onPress={() => router.push(WISHLIST_ROUTE)}
             />
             <MenuItem
               icon="card-outline"
