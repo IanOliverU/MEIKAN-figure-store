@@ -1,7 +1,6 @@
-import { Ionicons } from '@expo/vector-icons';
 import { Href, router, useFocusEffect } from 'expo-router';
 import { useCallback, useState } from 'react';
-import { Pressable, ScrollView, Text, View } from 'react-native';
+import { ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MenuItem } from '../../components/MenuItem';
@@ -74,16 +73,8 @@ export default function ProfileScreen() {
         contentContainerClassName="px-5 pb-28 pt-7"
         showsVerticalScrollIndicator={false}
       >
-        <View className="flex-row items-center justify-between">
+        <View>
           <Text className="text-3xl font-semibold text-white">My Profile</Text>
-          <Pressable
-            className="h-10 w-10 items-center justify-center rounded-full border border-[#222222] bg-[#121212]"
-            hitSlop={10}
-            onPress={() => router.push(ACCOUNT_SETTINGS_ROUTE)}
-            style={({ pressed }) => ({ opacity: pressed ? 0.78 : 1, transform: [{ scale: pressed ? 0.96 : 1 }] })}
-          >
-            <Ionicons name="settings-outline" size={18} color="#A1A1A1" />
-          </Pressable>
         </View>
 
         <View className="mt-6">
