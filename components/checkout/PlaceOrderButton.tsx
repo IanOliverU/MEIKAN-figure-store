@@ -2,11 +2,11 @@ import { Ionicons } from '@expo/vector-icons';
 import { Pressable, Text } from 'react-native';
 
 type PlaceOrderButtonProps = {
-  loading: boolean;
+  loading?: boolean;
   onPress: () => void;
 };
 
-export function PlaceOrderButton({ loading, onPress }: PlaceOrderButtonProps) {
+export function PlaceOrderButton({ loading = false, onPress }: PlaceOrderButtonProps) {
   return (
     <Pressable
       className={`mt-4 h-14 flex-row items-center justify-center gap-2 rounded-2xl ${

@@ -14,7 +14,7 @@ import { StepIndicator } from '../../components/StepIndicator';
 
 const PAYMENT_METHODS_ROUTE = '/payment-methods/add' as Href;
 const ADDRESSES_ROUTE = '/addresses' as Href;
-const ORDER_CONFIRMATION_ROUTE = '/order-confirmation' as Href;
+const ORDER_PROCESSING_ROUTE = '/order-processing' as Href;
 
 const paymentMethods: CheckoutPaymentMethod[] = [
   {
@@ -81,17 +81,26 @@ function createOrderId() {
   return `MKN-${Math.floor(10000 + Math.random() * 90000)}`;
 }
 
+function formatAddressForRoute(address: CheckoutShippingAddress) {
+  return [address.name, address.line1, address.line2, address.country].filter(Boolean).join('\n');
+}
+
 export default function CheckoutScreen() {
   const { addresses } = useAddresses();
   const [selectedPaymentId, setSelectedPaymentId] = useState<string | null>(null);
-  const [placingOrder, setPlacingOrder] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const itemCount = checkoutItems.reduce((total, item) => total + item.quantity, 0);
   const itemsTotal = useMemo(() => checkoutItems.reduce((total, item) => total + item.price * item.quantity, 0), []);
   const total = itemsTotal + checkoutTotals.shipping + checkoutTotals.importFee;
   const defaultAddress = addresses.find((item) => item.isDefault) ?? addresses[0] ?? null;
-  const shippingAddress = defaultAddress ? formatCheckoutAddress(defaultAddress) : null;
+  const fallbackAddress: CheckoutShippingAddress = {
+    name: 'Juan dela Cruz',
+    line1: 'Blk 5 Lot 12 Sampaguita Street, Barangay Graceville',
+    line2: 'San Jose del Monte, Bulacan 3023',
+    country: 'Philippines',
+    phone: '+63 917 555 0123',
+  };
+  const shippingAddress = defaultAddress ? formatCheckoutAddress(defaultAddress) : fallbackAddress;
   const selectedPayment = paymentMethods.find((method) => method.id === selectedPaymentId) ?? null;
 
   const handlePaymentSelect = (method: CheckoutPaymentMethod) => {
@@ -101,58 +110,35 @@ export default function CheckoutScreen() {
     }
 
     setSelectedPaymentId(method.id);
-    setError(null);
   };
 
   const handlePlaceOrder = () => {
-    if (placingOrder) {
-      return;
-    }
+    const generatedOrderId = createOrderId();
+    const selectedPaymentLabel = selectedPayment?.label ?? paymentMethods[0].label;
 
-    if (checkoutItems.length === 0) {
-      setError('Your cart is empty.');
-      return;
-    }
+    console.log('Mock order generated', {
+      orderId: generatedOrderId,
+      items: checkoutItems,
+      itemCount,
+      subtotal: itemsTotal,
+      shipping: checkoutTotals.shipping,
+      importFee: checkoutTotals.importFee,
+      total,
+      payment: selectedPaymentLabel,
+      shippingAddress,
+      status: 'Processing',
+    });
 
-    if (!selectedPayment) {
-      setError('Please select a payment method.');
-      return;
-    }
-
-    if (!shippingAddress) {
-      setError('Please add a shipping address.');
-      return;
-    }
-
-    setError(null);
-    setPlacingOrder(true);
-
-    setTimeout(() => {
-      const order = {
-        orderId: createOrderId(),
-        date: new Date().toISOString(),
-        items: checkoutItems,
-        itemCount,
-        subtotal: itemsTotal,
-        shipping: checkoutTotals.shipping,
-        importFee: checkoutTotals.importFee,
-        total,
-        paymentMethod: {
-          id: selectedPayment.id,
-          label: selectedPayment.label,
-          type: selectedPayment.type,
-        },
-        shippingAddress,
-        status: 'Processing',
-      };
-
-      console.log('Mock order generated', order);
-      setPlacingOrder(false);
-      router.replace({
-        pathname: ORDER_CONFIRMATION_ROUTE,
-        params: { order: encodeURIComponent(JSON.stringify(order)) },
-      } as never);
-    }, 1200);
+    router.replace({
+      pathname: ORDER_PROCESSING_ROUTE,
+      params: {
+        orderId: generatedOrderId,
+        total: String(total),
+        payment: selectedPaymentLabel,
+        address: formatAddressForRoute(shippingAddress),
+        items: JSON.stringify(checkoutItems),
+      },
+    } as never);
   };
 
   return (
@@ -206,14 +192,7 @@ export default function CheckoutScreen() {
           />
         </View>
 
-        {error ? (
-          <View className="mt-4 flex-row items-center rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3">
-            <Ionicons name="alert-circle-outline" size={18} color="#FCA5A5" />
-            <Text className="ml-2 flex-1 text-sm text-red-200">{error}</Text>
-          </View>
-        ) : null}
-
-        <PlaceOrderButton loading={placingOrder} onPress={handlePlaceOrder} />
+        <PlaceOrderButton onPress={handlePlaceOrder} />
       </ScrollView>
     </SafeAreaView>
   );
