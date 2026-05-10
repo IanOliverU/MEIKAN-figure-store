@@ -53,8 +53,12 @@ type AccountCardProps = {
 
 export const accountErrorMessages: Record<AuthServiceErrorCode | ProfileServiceErrorCode, string> = {
   email_exists: 'Email already exists.',
+  email_not_confirmed: 'Please confirm your email before continuing.',
+  invalid_credentials: 'Invalid email or password.',
   invalid_password: 'Invalid password.',
+  missing_config: 'Supabase is missing its publishable key.',
   network_error: 'Network error. Please try again.',
+  oauth_cancelled: 'Sign-in was cancelled.',
   session_expired: 'Session expired. Please sign in again.',
   username_taken: 'Username already taken.',
 };

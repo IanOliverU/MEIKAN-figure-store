@@ -5,15 +5,38 @@ import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } fro
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthButton, AuthError, AuthInput } from '../components/auth';
+import { resetPasswordForEmail } from '../services/supabase/authService';
 
 export default function ForgotPasswordScreen() {
   const router = useRouter();
   const [email, setEmail] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const handleReset = () => {
-    console.log('Password reset placeholder pressed', { email });
-    setShowSuccess(true);
+  const handleReset = async () => {
+    setShowSuccess(false);
+    setErrorMessage(null);
+
+    if (!email.trim()) {
+      setErrorMessage('Enter the email for your MEIKAN account.');
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      await resetPasswordForEmail(email);
+      setShowSuccess(true);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to send a reset link right now. Please try again.';
+      setErrorMessage(message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -49,8 +72,9 @@ export default function ForgotPasswordScreen() {
 
               <View className="mt-8 gap-4">
                 {showSuccess ? (
-                  <AuthError tone="success" message="Reset screen placeholder is ready for Supabase email delivery later." />
+                  <AuthError tone="success" message="Reset link sent. Check your email for the next step." />
                 ) : null}
+                {errorMessage ? <AuthError message={errorMessage} /> : null}
                 <AuthInput
                   label="Email"
                   value={email}
@@ -66,7 +90,13 @@ export default function ForgotPasswordScreen() {
               </View>
 
               <View className="mt-7">
-                <AuthButton title="Send Reset Link" iconName="send-outline" onPress={handleReset} />
+                <AuthButton
+                  title="Send Reset Link"
+                  iconName="send-outline"
+                  loading={loading}
+                  loadingTitle="Sending link..."
+                  onPress={handleReset}
+                />
               </View>
 
               <Pressable

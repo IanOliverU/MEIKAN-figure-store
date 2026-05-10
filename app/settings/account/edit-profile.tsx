@@ -32,13 +32,17 @@ export default function EditProfileScreen() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    getProfile().then((currentProfile) => {
-      setProfile(currentProfile);
-      setDisplayName(currentProfile.display_name);
-      setUsername(currentProfile.username);
-      setAvatarUrl(currentProfile.avatar_url ?? '');
-      setBio(currentProfile.bio);
-    });
+    getProfile()
+      .then((currentProfile) => {
+        setProfile(currentProfile);
+        setDisplayName(currentProfile.display_name);
+        setUsername(currentProfile.username);
+        setAvatarUrl(currentProfile.avatar_url ?? '');
+        setBio(currentProfile.bio);
+      })
+      .catch((profileError) => {
+        setError(getAccountErrorMessage(profileError));
+      });
   }, []);
 
   const displayNameError = submitted && !displayName.trim() ? 'Display name is required.' : undefined;
@@ -64,7 +68,7 @@ export default function EditProfileScreen() {
       });
 
       setProfile(updatedProfile);
-      setSuccess('Profile saved locally.');
+      setSuccess('Profile saved.');
     } catch (saveError) {
       setError(getAccountErrorMessage(saveError));
     } finally {
@@ -81,7 +85,7 @@ export default function EditProfileScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <AccountHeader title="Edit Profile" subtitle="Updates profile-table-shaped mock fields." onBack={() => router.back()} />
+          <AccountHeader title="Edit Profile" subtitle="Update your Supabase profile fields." onBack={() => router.back()} />
 
           {profile ? (
             <View className="mt-8">
@@ -89,7 +93,7 @@ export default function EditProfileScreen() {
                 <View className="flex-row items-center">
                   <AccountAvatar profile={{ ...profile, display_name: displayName, username }} />
                   <View className="ml-4 min-w-0 flex-1">
-                    <Text className="text-base font-semibold text-white">Local placeholder avatar</Text>
+                    <Text className="text-base font-semibold text-white">Avatar storage path</Text>
                     <Text className="mt-1 text-xs leading-5 text-[#777777]">
                       Future uploads can target {getAvatarStoragePath(profile.user_id)}.
                     </Text>

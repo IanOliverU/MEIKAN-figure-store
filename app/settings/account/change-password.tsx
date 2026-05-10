@@ -44,7 +44,7 @@ export default function ChangePasswordScreen() {
       setNewPassword('');
       setConfirmPassword('');
       setSubmitted(false);
-      setSuccess('Password updated locally.');
+      setSuccess('Password updated.');
     } catch (updateError) {
       setError(getAccountErrorMessage(updateError));
     } finally {
@@ -61,7 +61,7 @@ export default function ChangePasswordScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <AccountHeader title="Change Password" subtitle="Password update mock for Supabase Auth later." onBack={() => router.back()} />
+          <AccountHeader title="Change Password" subtitle="Re-enter your current password before updating it." onBack={() => router.back()} />
 
           <View className="mt-8 gap-5">
             <AccountTextInput

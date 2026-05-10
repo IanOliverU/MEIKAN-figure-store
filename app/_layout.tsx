@@ -8,6 +8,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import { SplashScreen } from '../screens/SplashScreen';
+import { AuthProvider } from '../services/supabase/authContext';
 
 export default function RootLayout() {
   const [showSplash, setShowSplash] = useState(true);
@@ -18,17 +19,19 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView className="flex-1 bg-[#0A0A0A]">
       <SafeAreaProvider>
-        <StatusBar barStyle="light-content" hidden />
-        {showSplash ? (
-          <SplashScreen onFinish={handleSplashFinish} />
-        ) : (
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: '#0A0A0A' },
-            }}
-          />
-        )}
+        <AuthProvider>
+          <StatusBar barStyle="light-content" hidden />
+          {showSplash ? (
+            <SplashScreen onFinish={handleSplashFinish} />
+          ) : (
+            <Stack
+              screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: '#0A0A0A' },
+              }}
+            />
+          )}
+        </AuthProvider>
       </SafeAreaProvider>
     </GestureHandlerRootView>
   );

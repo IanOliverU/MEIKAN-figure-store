@@ -8,16 +8,13 @@ import { MenuItem } from '../../components/MenuItem';
 import { MenuSection } from '../../components/MenuSection';
 import { ProfileCard, ProfileUser } from '../../components/ProfileCard';
 import { StatsCard } from '../../components/StatsCard';
+import { signOut } from '../../services/supabase/authService';
 import { getProfile } from '../../services/supabase/profileService';
 
 const stats = {
   orders: 12,
   wishlist: 7,
   points: 4820,
-};
-
-const logMenuPress = (label: string) => {
-  console.log(label);
 };
 
 const PAYMENT_METHODS_ROUTE = '/payment-methods' as Href;
@@ -44,17 +41,29 @@ const fallbackUser: ProfileUser = {
 export default function ProfileScreen() {
   const [user, setUser] = useState<ProfileUser>(fallbackUser);
 
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } finally {
+      router.replace('/login' as never);
+    }
+  };
+
   useFocusEffect(
     useCallback(() => {
-      getProfile().then((profile) => {
-        setUser({
-          display_name: profile.display_name,
-          username: profile.username,
-          avatar_url: profile.avatar_url,
-          email: profile.email,
-          tier: 'Collector Tier',
+      getProfile()
+        .then((profile) => {
+          setUser({
+            display_name: profile.display_name,
+            username: profile.username,
+            avatar_url: profile.avatar_url,
+            email: profile.email,
+            tier: 'Collector Tier',
+          });
+        })
+        .catch(() => {
+          setUser(fallbackUser);
         });
-      });
     }, []),
   );
 
@@ -147,7 +156,7 @@ export default function ProfileScreen() {
           <MenuSection title="Support">
             <MenuItem icon="chatbox-outline" label="Help Center" showDivider onPress={() => router.push(HELP_ROUTE)} />
             <MenuItem icon="information-circle-outline" label="About MEIKAN" showDivider onPress={() => router.push(ABOUT_ROUTE)} />
-            <MenuItem icon="log-out-outline" label="Sign Out" danger onPress={() => logMenuPress('Sign Out')} />
+            <MenuItem icon="log-out-outline" label="Sign Out" danger onPress={handleSignOut} />
           </MenuSection>
         </View>
       </ScrollView>

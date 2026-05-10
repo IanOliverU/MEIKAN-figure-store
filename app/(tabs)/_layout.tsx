@@ -1,13 +1,25 @@
 import { Ionicons } from '@expo/vector-icons';
-import { Tabs } from 'expo-router';
+import { Redirect, Tabs } from 'expo-router';
+import { View } from 'react-native';
 
 import { AddressProvider } from '../../components/addresses/AddressContext';
 import { PaymentMethodsProvider } from '../../components/payment/PaymentMethodsContext';
+import { useAuth } from '../../services/supabase/authContext';
 
 const ACCENT = '#C6A96B';
 const MUTED = '#666666';
 
 export default function TabsLayout() {
+  const { isConfigured, loading, session } = useAuth();
+
+  if (loading) {
+    return <View className="flex-1 bg-[#0A0A0A]" />;
+  }
+
+  if (isConfigured && !session) {
+    return <Redirect href={'/login' as never} />;
+  }
+
   return (
     <AddressProvider>
       <PaymentMethodsProvider>

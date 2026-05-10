@@ -1,33 +1,57 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AuthButton, AuthInput } from '../components/auth';
+import { AuthButton, AuthError, AuthInput } from '../components/auth';
+import { signUpWithEmail } from '../services/supabase/authService';
+import { useAuth } from '../services/supabase/authContext';
 
 export default function RegisterScreen() {
   const router = useRouter();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { session } = useAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isCreating, setIsCreating] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleCreateAccount = () => {
-    setIsCreating(true);
-    timeoutRef.current = setTimeout(() => {
-      setIsCreating(false);
+    if (session) {
       router.replace('/(tabs)' as never);
-    }, 650);
+    }
+  }, [router, session]);
+
+  const handleCreateAccount = async () => {
+    setStatusMessage(null);
+    setErrorMessage(null);
+
+    if (!name.trim() || !email.trim() || password.length < 8) {
+      setErrorMessage('Enter your name, a valid email, and a password with at least 8 characters.');
+      return;
+    }
+
+    setIsCreating(true);
+
+    try {
+      const { session: createdSession } = await signUpWithEmail({ email, password, name });
+
+      if (createdSession) {
+        router.replace('/(tabs)' as never);
+      } else {
+        setStatusMessage('Account created. Check your email to confirm your address before signing in.');
+      }
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to create your account right now. Please try again.';
+      setErrorMessage(message);
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -56,6 +80,8 @@ export default function RegisterScreen() {
               </View>
 
               <View className="mt-8 gap-4">
+                {statusMessage ? <AuthError tone="success" message={statusMessage} /> : null}
+                {errorMessage ? <AuthError message={errorMessage} /> : null}
                 <AuthInput
                   label="Name"
                   value={name}

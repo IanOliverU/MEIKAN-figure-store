@@ -1,10 +1,12 @@
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AuthButton, AuthDivider, AuthError, AuthInput } from '../components/auth';
+import { signInWithEmail, signInWithGoogle } from '../services/supabase/authService';
+import { useAuth } from '../services/supabase/authContext';
 
 function BrandMark() {
   return (
@@ -25,32 +27,62 @@ function BrandMark() {
 export default function LoginScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ state?: string }>();
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { session } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [isSigningInWithGoogle, setIsSigningInWithGoogle] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const showInvalidError = params.state === 'error';
   const showAttemptsError = params.state === 'attempts';
 
   useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleSignIn = () => {
-    setIsSigningIn(true);
-    timeoutRef.current = setTimeout(() => {
-      setIsSigningIn(false);
+    if (session) {
       router.replace('/(tabs)' as never);
-    }, 650);
+    }
+  }, [router, session]);
+
+  const handleSignIn = async () => {
+    setErrorMessage(null);
+
+    if (!email.trim() || !password) {
+      setErrorMessage('Enter your email and password to continue.');
+      return;
+    }
+
+    setIsSigningIn(true);
+
+    try {
+      await signInWithEmail(email, password);
+      router.replace('/(tabs)' as never);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to sign in right now. Please try again.';
+      setErrorMessage(message);
+    } finally {
+      setIsSigningIn(false);
+    }
   };
 
-  const handleGoogleLogin = () => {
-    console.log('Google login pressed');
+  const handleGoogleLogin = async () => {
+    setErrorMessage(null);
+    setIsSigningInWithGoogle(true);
+
+    try {
+      await signInWithGoogle();
+      router.replace('/(tabs)' as never);
+    } catch (error) {
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Unable to sign in with Google right now. Please try again.';
+      setErrorMessage(message);
+    } finally {
+      setIsSigningInWithGoogle(false);
+    }
   };
 
   return (
@@ -73,6 +105,7 @@ export default function LoginScreen() {
 
               <View className="mt-7 gap-5">
                 {showInvalidError ? <AuthError message="Invalid email or password. Please try again." /> : null}
+                {errorMessage ? <AuthError message={errorMessage} /> : null}
                 <AuthInput
                   label="Email"
                   value={email}
@@ -110,14 +143,26 @@ export default function LoginScreen() {
               </Pressable>
 
               <View className="mt-5">
-                <AuthButton title="Sign In" iconName="log-in-outline" loading={isSigningIn} onPress={handleSignIn} />
+                <AuthButton
+                  title="Sign In"
+                  iconName="log-in-outline"
+                  loading={isSigningIn}
+                  onPress={handleSignIn}
+                />
               </View>
 
               <View className="my-6">
                 <AuthDivider />
               </View>
 
-              <AuthButton title="Continue with Google" variant="outline" iconName="logo-google" onPress={handleGoogleLogin} />
+              <AuthButton
+                title="Continue with Google"
+                variant="outline"
+                iconName="logo-google"
+                loading={isSigningInWithGoogle}
+                loadingTitle="Opening Google..."
+                onPress={handleGoogleLogin}
+              />
 
               {showAttemptsError ? (
                 <View className="mt-6">

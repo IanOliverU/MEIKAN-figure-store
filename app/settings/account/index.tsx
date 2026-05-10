@@ -54,13 +54,17 @@ export default function AccountSettingsScreen() {
   const [profile, setProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
-    getProfile().then(setProfile);
+    getProfile()
+      .then(setProfile)
+      .catch(() => {
+        setProfile(null);
+      });
   }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-[#0A0A0A]" edges={['top']}>
       <ScrollView className="flex-1" contentContainerClassName="px-5 pb-28 pt-5" showsVerticalScrollIndicator={false}>
-        <AccountHeader title="Account & Identity" subtitle="Local mock data shaped for Supabase later." onBack={() => router.back()} />
+        <AccountHeader title="Account & Identity" subtitle="Supabase Auth and profile data for this account." onBack={() => router.back()} />
 
         {profile ? (
           <View className="mt-8">
@@ -108,11 +112,11 @@ export default function AccountSettingsScreen() {
         <View className="mt-7">
           <Text className="mb-3 text-xs font-semibold uppercase tracking-wider text-[#666666]">Auth Data</Text>
           <AccountCard>
-            <RouteRow iconName="mail-outline" title="Change Email" subtitle="Supabase Auth email later" href={CHANGE_EMAIL_ROUTE} />
+            <RouteRow iconName="mail-outline" title="Change Email" subtitle="Supabase Auth email" href={CHANGE_EMAIL_ROUTE} />
             <RouteRow
               iconName="lock-closed-outline"
               title="Change Password"
-              subtitle="Supabase Auth password later"
+              subtitle="Supabase Auth password"
               href={CHANGE_PASSWORD_ROUTE}
             />
             <RouteRow

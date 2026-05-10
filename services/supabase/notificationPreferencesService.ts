@@ -1,3 +1,5 @@
+import { isSupabaseConfigured, supabase } from './client';
+
 export type NotificationPreferenceKey =
   | 'push_enabled'
   | 'email_enabled'
@@ -40,20 +42,82 @@ function clonePreferences(preferences: NotificationPreferences): NotificationPre
   return { ...preferences };
 }
 
+async function getCurrentUserId() {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  return user?.id ?? null;
+}
+
+async function createNotificationPreferences(userId: string) {
+  const { data, error } = await supabase
+    .from('notification_preferences')
+    .insert({ user_id: userId })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return data;
+}
+
 // Future push integration belongs here: Expo permission request, push token registration,
 // device token storage, and backend notification trigger wiring.
 export async function getNotificationPreferences() {
-  return Promise.resolve(clonePreferences(mockNotificationPreferences));
+  if (!isSupabaseConfigured) {
+    return Promise.resolve(clonePreferences(mockNotificationPreferences));
+  }
+
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    return clonePreferences(mockNotificationPreferences);
+  }
+
+  const { data, error } = await supabase
+    .from('notification_preferences')
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
+
+  if (error) {
+    throw error;
+  }
+
+  return data ?? createNotificationPreferences(userId);
 }
 
 export async function updateNotificationPreferences(data: NotificationPreferencesUpdateInput) {
-  mockNotificationPreferences = {
-    ...mockNotificationPreferences,
-    ...data,
-    updated_at: new Date().toISOString(),
-  };
+  if (!isSupabaseConfigured) {
+    mockNotificationPreferences = {
+      ...mockNotificationPreferences,
+      ...data,
+      updated_at: new Date().toISOString(),
+    };
 
-  return Promise.resolve(clonePreferences(mockNotificationPreferences));
+    return Promise.resolve(clonePreferences(mockNotificationPreferences));
+  }
+
+  const userId = await getCurrentUserId();
+
+  if (!userId) {
+    throw new Error('Session expired');
+  }
+
+  const { data: preferences, error } = await supabase
+    .from('notification_preferences')
+    .upsert({ user_id: userId, ...data }, { onConflict: 'user_id' })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw error;
+  }
+
+  return preferences;
 }
 
 export async function updateSingleNotificationPreference(

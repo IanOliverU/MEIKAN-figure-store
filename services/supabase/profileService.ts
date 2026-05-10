@@ -1,3 +1,5 @@
+import { isSupabaseConfigured, supabase } from './client';
+
 export type Profile = {
   id: string;
   user_id: string;
@@ -26,7 +28,7 @@ export class ProfileServiceError extends Error {
 }
 
 export const AVATAR_BUCKET = 'avatars';
-export const FUTURE_AVATAR_PATH_PATTERN = 'avatars/{user_id}/profile.jpg';
+export const FUTURE_AVATAR_PATH_PATTERN = '{user_id}/profile.jpg';
 
 const MOCK_DATE = '2026-05-10T00:00:00.000Z';
 
@@ -46,8 +48,38 @@ function cloneProfile(profile: Profile): Profile {
   return { ...profile };
 }
 
+function normalizeUsername(username: string) {
+  return username.trim().toLowerCase().replace(/[^a-z0-9_]/g, '_');
+}
+
+function getDefaultUsername(email: string, userId: string) {
+  const baseUsername = normalizeUsername(email.split('@')[0] || 'collector');
+  return `${baseUsername}_${userId.slice(0, 8)}`;
+}
+
+function toProfileServiceError(error: { code?: string; message?: string } | null) {
+  if (error?.code === '23505') {
+    return new ProfileServiceError('username_taken', error.message || 'Username already taken');
+  }
+
+  return new ProfileServiceError('network_error', error?.message || 'Profile request failed');
+}
+
+async function getCurrentUser() {
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser();
+
+  if (error) {
+    throw new ProfileServiceError('session_expired', error.message);
+  }
+
+  return user;
+}
+
 export function getAvatarStoragePath(userId: string) {
-  return `${AVATAR_BUCKET}/${userId}/profile.jpg`;
+  return `${userId}/profile.jpg`;
 }
 
 function maybeMockProfileError(data: ProfileUpdateInput) {
@@ -66,21 +98,100 @@ function maybeMockProfileError(data: ProfileUpdateInput) {
   }
 }
 
+async function createProfileForUser(user: NonNullable<Awaited<ReturnType<typeof getCurrentUser>>>) {
+  const email = user.email ?? '';
+  const displayName =
+    typeof user.user_metadata?.display_name === 'string' && user.user_metadata.display_name.trim()
+      ? user.user_metadata.display_name.trim()
+      : email.split('@')[0] || 'Collector';
+
+  const { data, error } = await supabase
+    .from('profiles')
+    .insert({
+      user_id: user.id,
+      display_name: displayName,
+      username: getDefaultUsername(email, user.id),
+      email,
+    })
+    .select('*')
+    .single();
+
+  if (error) {
+    throw toProfileServiceError(error);
+  }
+
+  return data;
+}
+
 export async function getProfile() {
-  return Promise.resolve(cloneProfile(mockProfile));
+  if (!isSupabaseConfigured) {
+    return Promise.resolve(cloneProfile(mockProfile));
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    return cloneProfile(mockProfile);
+  }
+
+  const { data, error } = await supabase.from('profiles').select('*').eq('user_id', user.id).maybeSingle();
+
+  if (error) {
+    throw toProfileServiceError(error);
+  }
+
+  return data ?? createProfileForUser(user);
 }
 
 export async function updateProfile(data: ProfileUpdateInput) {
-  maybeMockProfileError(data);
+  if (!isSupabaseConfigured) {
+    maybeMockProfileError(data);
 
-  mockProfile = {
-    ...mockProfile,
+    mockProfile = {
+      ...mockProfile,
+      ...data,
+      display_name: data.display_name?.trim() || mockProfile.display_name,
+      username: data.username?.trim() || mockProfile.username,
+      bio: data.bio?.trim() ?? mockProfile.bio,
+      updated_at: new Date().toISOString(),
+    };
+
+    return Promise.resolve(cloneProfile(mockProfile));
+  }
+
+  const user = await getCurrentUser();
+
+  if (!user) {
+    throw new ProfileServiceError('session_expired', 'Session expired');
+  }
+
+  const updates = {
     ...data,
-    display_name: data.display_name?.trim() || mockProfile.display_name,
-    username: data.username?.trim() || mockProfile.username,
-    bio: data.bio?.trim() ?? mockProfile.bio,
-    updated_at: new Date().toISOString(),
+    display_name: data.display_name?.trim() || undefined,
+    username: data.username ? normalizeUsername(data.username) : undefined,
+    bio: data.bio?.trim() ?? undefined,
+    email: user.email ?? '',
   };
 
-  return Promise.resolve(cloneProfile(mockProfile));
+  const { data: profile, error } = await supabase
+    .from('profiles')
+    .upsert(
+      {
+        user_id: user.id,
+        display_name: updates.display_name || user.email?.split('@')[0] || 'Collector',
+        username: updates.username || getDefaultUsername(user.email ?? '', user.id),
+        avatar_url: updates.avatar_url,
+        bio: updates.bio,
+        email: updates.email,
+      },
+      { onConflict: 'user_id' },
+    )
+    .select('*')
+    .single();
+
+  if (error) {
+    throw toProfileServiceError(error);
+  }
+
+  return profile;
 }

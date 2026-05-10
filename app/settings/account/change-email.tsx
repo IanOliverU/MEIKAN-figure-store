@@ -40,7 +40,7 @@ export default function ChangeEmailScreen() {
 
     try {
       await updateEmail(email);
-      setSuccess('Email updated locally.');
+      setSuccess('Email update started. Supabase may ask you to confirm the new address.');
     } catch (updateError) {
       setError(getAccountErrorMessage(updateError));
     } finally {
@@ -57,7 +57,7 @@ export default function ChangeEmailScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <AccountHeader title="Change Email" subtitle="Auth email mock, ready for Supabase Auth." onBack={() => router.back()} />
+          <AccountHeader title="Change Email" subtitle="Update the email on your Supabase Auth user." onBack={() => router.back()} />
 
           <View className="mt-8">
             <AccountTextInput
