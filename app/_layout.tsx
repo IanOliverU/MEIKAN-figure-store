@@ -2,7 +2,7 @@ import 'react-native-gesture-handler';
 import '../global.css';
 
 import { Stack } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StatusBar } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,11 +16,15 @@ export default function RootLayout() {
     setShowSplash(false);
   }, []);
 
+  useEffect(() => {
+    StatusBar.setHidden(true, 'fade');
+  }, []);
+
   return (
     <GestureHandlerRootView className="flex-1 bg-[#0A0A0A]">
       <SafeAreaProvider>
         <AuthProvider>
-          <StatusBar barStyle="light-content" hidden />
+          <StatusBar barStyle="light-content" hidden translucent backgroundColor="transparent" />
           {showSplash ? (
             <SplashScreen onFinish={handleSplashFinish} />
           ) : (
